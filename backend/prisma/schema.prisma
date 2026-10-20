@@ -1,0 +1,66 @@
+// Prisma Schema - Sistema de Folha de Pagamento Contábil
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // Troque para "postgresql" para produção ou caso use PostgreSQL
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Empresa (Prestadora de Contabilidade ou Empresa Cliente)
+model Company {
+  id          String   @id @default(uuid())
+  name        String   // Razão Social
+  tradeName   String?  // Nome Fantasia
+  taxId       String   @unique // CNPJ
+  companyType String   // 'PROVIDER' (Contabilidade) ou 'CLIENT' (Empresa Cliente)
+  email       String?
+  phone       String?
+  address     String?
+  city        String?
+  state       String?
+  postalCode  String?
+  isActive    Boolean  @default(true)
+
+  // Auto-relacionamento: Se for CLIENT, aponta para a PROVIDER que presta o serviço
+  providerId  String?
+  provider    Company?  @relation("ProviderToClients", fields: [providerId], references: [id], onDelete: SetNull)
+  clients     Company[] @relation("ProviderToClients")
+
+  // Usuários vinculados à empresa
+  users       User[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("companies")
+}
+
+// Modelo de Usuário do Sistema
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  
+  // Níveis de Acesso:
+  // - MASTER_ADMIN: Superusuário do sistema com controle total
+  // - PROVIDER_ADMIN: Gestor da empresa de contabilidade
+  // - PROVIDER_ACCOUNTANT: Analista/Operador contábil da prestadora
+  // - CLIENT_ADMIN: Administrador/RH da empresa cliente
+  // - CLIENT_USER: Funcionário/Colaborador da empresa cliente
+  role         String    @default("CLIENT_USER")
+
+  // Empresa à qual o usuário pertence (opcional para MASTER_ADMIN global)
+  companyId    String?
+  company      Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("users")
+}
