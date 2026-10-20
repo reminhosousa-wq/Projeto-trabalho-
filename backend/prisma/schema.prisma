@@ -21,7 +21,10 @@ model Company {
   city        String?
   state       String?
   postalCode  String?
-  isActive    Boolean  @default(true)
+  neighborhood    String?
+  useTimeTracking String   @default("Sim") // 'Sim' ou 'Não' (compatível com a regra de controle de ponto)
+  contactName     String?  // Nome do Responsável / Contato
+  isActive        Boolean  @default(true)
 
   // Auto-relacionamento: Se for CLIENT, aponta para a PROVIDER que presta o serviço
   providerId  String?
@@ -43,6 +46,8 @@ model User {
   name         String
   email        String    @unique
   passwordHash String
+  googleId     String?
+  avatarUrl    String?
   
   // Níveis de Acesso:
   // - MASTER_ADMIN: Superusuário do sistema com controle total

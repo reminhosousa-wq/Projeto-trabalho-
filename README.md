@@ -1,29 +1,70 @@
-# Sistema de folha de pagamento
+# 🏢 Sistema de Gestão de Folha de Pagamento Contábil
 
-Sistema web para uma empresa de contabilidade que presta serviço de folha de pagamento a empresas clientes.
+Sistema Full Stack desenvolvido para uma empresa de contabilidade encarregada de prestar serviços de folha de pagamento para empresas clientes.
 
-## Como usar
+Este projeto atende e expande os requisitos acadêmicos da disciplina, migrando do protótipo inicial em localStorage para uma **arquitetura real com backend em Node.js/Express, banco de dados relacional via Prisma ORM, autenticação JWT, integração com o Google e frontend em React + TypeScript**.
 
-Abra o arquivo `index.html` no navegador. Não precisa instalar nada.
+*(Nota: O arquivo `index.html` na raiz contém o protótipo estático de referência da disciplina).*
 
-No primeiro acesso, crie o usuário mestre. O sistema mostra uma chave de recuperação: guarde-a, pois ela permite redefinir a senha sem perder os dados.
+---
 
-## O que o sistema faz
+## 🌟 Novas Funcionalidades Implementadas
 
-- Login com três perfis: Mestre, Gerente e Operador
-- Cadastro de empresas clientes, funcionários (dados pessoais, contratuais, bancários e filhos), cargos com código, jornadas e rubricas
-- Controle de ponto com tolerância, limite de horas extras e ajustes que preservam a marcação original
-- Folha de pagamento por competência, com proventos, descontos, INSS progressivo (tabela 2026), férias, 13º, adiantamento e FGTS informativo
-- Fluxo Rascunho, Conferida e Fechada, contracheque para impressão e relatório mensal
-- Exportação e importação de backup dos dados
+### 1. 🏢 Cadastro Completo de Empresas Clientes
+Cadastro detalhado das empresas atendidas pela contabilidade com os seguintes dados:
+- **Identificação:** Razão Social (`razao`), Nome Fantasia (`fantasia`) e CNPJ com máscara e validação.
+- **Contato:** Nome do Responsável de RH, Telefone comercial e E-mail corporativo.
+- **Localização:** Endereço completo (Logradouro, Bairro, Cidade, Estado/UF e CEP).
+- **Parâmetros Operacionais:** Opção de controle de ponto integrado (*"Sim"* ou *"Não, apenas folha"*).
+- **Vínculo:** Vinculação automática ou manual com a Prestadora Contábil responsável.
+- **Gestão:** Listagem com busca em tempo real, visualização de ficha completa, edição e exclusão.
 
-## Observações
+### 2. 🔐 Acesso Livre ("Qualquer e-mail com senha válida pode logar")
+- **Auto-registro no Login:** Qualquer usuário que informar um e-mail corporativo ou pessoal e uma senha de no mínimo 6 caracteres terá sua conta criada automaticamente no primeiro acesso.
+- **Segurança:** Caso o e-mail já exista no banco, a senha é validada de forma segura com salt Bcrypt.
+- **Aba "Criar Conta":** Disponibilizada para usuários que desejarem definir seu nome completo explicitamente antes de entrar.
 
-- Os dados ficam salvos no navegador de quem usa (localStorage). Para uso real com clientes, é preciso um servidor com banco de dados e autenticação segura.
-- Imposto de renda está fora do escopo inicial.
-- Percentuais de horas extras (50%), adicional noturno (20%) e FGTS (8%) são valores iniciais editáveis em Rubricas e devem ser confirmados.
-- A tabela do INSS fica em Rubricas e deve ser atualizada todo início de ano.
+### 3. 🌐 Integração Oficial com o Google ("Entrar com o Google")
+- Botão oficial estilizado **"Continuar com o Google"** na tela de login.
+- Suporte a autenticação via Google Identity Services (`google-auth-library` no backend).
+- Criação e sincronização automática de perfil (avatar, nome, e-mail) vinculado à conta Google.
+- Modal com seleção de contas de teste rápidas para desenvolvimento local e homologação imediata.
 
-## Publicar no GitHub Pages
+---
 
-Em Settings, Pages, escolha a branch `main` e a pasta raiz.
+## 🚀 Como Rodar o Projeto Full Stack
+
+### Pré-requisitos:
+- Node.js versão `>= 18.x`
+- npm versão `>= 9.x`
+
+### 1. Backend (API REST)
+```bash
+cd backend
+npm install
+cp .env.example .env
+npm run prisma:push     # Sincroniza tabelas no banco de dados local
+npm run prisma:seed     # Cadastra o Usuário Mestre inicial
+npm run dev             # Servidor iniciado em http://localhost:3333
+```
+
+### 2. Frontend (React + Vite)
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev             # Aplicação iniciada em http://localhost:5173
+```
+
+Acesse no navegador: **`http://localhost:5173`**
+
+---
+
+## 🔑 Credenciais Padrão para Testes Rápidos
+
+| Perfil | E-mail | Senha | Descrição |
+| :--- | :--- | :--- | :--- |
+| **👑 Usuário Mestre** | `admin@contabilidade.com` | `admin_master_123` | Administrador geral do sistema com acesso total |
+| **🏢 Gestor RH Cliente** | `rh@techsolutions.com.br` | `cliente_pass_123` | Administrador da empresa cliente demonstrativa |
+| **🌐 Login com Google** | Clique em *"Continuar com o Google"* | — | Acesso instantâneo via conta Google |
+| **✨ Qualquer Novo Usuário** | Digite qualquer e-mail e senha (mín. 6 dígitos) | — | Conta criada e autenticada automaticamente |

@@ -10,4 +10,5 @@ export const env = {
   MASTER_ADMIN_NAME: process.env.MASTER_ADMIN_NAME || 'Administrador Geral',
   MASTER_ADMIN_EMAIL: process.env.MASTER_ADMIN_EMAIL || 'admin@contabilidade.com',
   MASTER_ADMIN_PASSWORD: process.env.MASTER_ADMIN_PASSWORD || 'admin_master_123',
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
 };

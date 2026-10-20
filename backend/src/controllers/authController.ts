@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { loginService, getMeService } from '../services/authService.js';
+import { loginService, registerService, googleLoginService, getMeService } from '../services/authService.js';
 
 export async function loginController(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -9,6 +9,35 @@ export async function loginController(req: Request, res: Response, next: NextFun
     res.status(200).json({
       success: true,
       message: 'Autenticação realizada com sucesso!',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function registerController(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { name, email, password } = req.body;
+    const result = await registerService(name, email, password);
+
+    res.status(201).json({
+      success: true,
+      message: 'Conta criada e autenticada com sucesso!',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function googleAuthController(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const result = await googleLoginService(req.body);
+
+    res.status(200).json({
+      success: true,
+      message: 'Autenticação com o Google realizada com sucesso!',
       data: result,
     });
   } catch (error) {

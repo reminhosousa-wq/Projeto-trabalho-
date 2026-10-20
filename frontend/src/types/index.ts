@@ -16,9 +16,12 @@ export interface Company {
   email?: string | null;
   phone?: string | null;
   address?: string | null;
+  neighborhood?: string | null;
   city?: string | null;
   state?: string | null;
   postalCode?: string | null;
+  useTimeTracking?: string | null;
+  contactName?: string | null;
   isActive: boolean;
   providerId?: string | null;
   provider?: {
@@ -37,6 +40,8 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  avatarUrl?: string | null;
+  googleId?: string | null;
   companyId: string | null;
   company?: {
     id: string;

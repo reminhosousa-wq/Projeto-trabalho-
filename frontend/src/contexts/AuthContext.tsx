@@ -7,6 +7,8 @@ interface AuthContextData {
   token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  loginWithGoogle: (data: { credential?: string; email?: string; name?: string; avatarUrl?: string }) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   hasRole: (...roles: UserRole[]) => boolean;
@@ -18,6 +20,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const saveAuthSession = (authData: AuthResponse) => {
+    setToken(authData.token);
+    setUser(authData.user);
+    localStorage.setItem('@folha_contabil:token', authData.token);
+    localStorage.setItem('@folha_contabil:user', JSON.stringify(authData.user));
+  };
 
   useEffect(() => {
     async function loadStoredAuth() {
@@ -34,7 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(freshUserData);
           localStorage.setItem('@folha_contabil:user', JSON.stringify(freshUserData));
         } catch {
-          // Token inválido ou expirado
           logout();
         }
       }
@@ -46,12 +54,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     const response = await api.post<AuthResponse>('/auth/login', { email, password });
-    
-    setToken(response.token);
-    setUser(response.user);
+    saveAuthSession(response);
+  };
 
-    localStorage.setItem('@folha_contabil:token', response.token);
-    localStorage.setItem('@folha_contabil:user', JSON.stringify(response.user));
+  const register = async (name: string, email: string, password: string) => {
+    const response = await api.post<AuthResponse>('/auth/register', { name, email, password });
+    saveAuthSession(response);
+  };
+
+  const loginWithGoogle = async (googlePayload: {
+    credential?: string;
+    email?: string;
+    name?: string;
+    avatarUrl?: string;
+  }) => {
+    const response = await api.post<AuthResponse>('/auth/google', googlePayload);
+    saveAuthSession(response);
   };
 
   const logout = () => {
@@ -63,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const hasRole = (...roles: UserRole[]): boolean => {
     if (!user) return false;
-    if (user.role === 'MASTER_ADMIN') return true; // Master tem acesso amplo
+    if (user.role === 'MASTER_ADMIN') return true;
     return roles.includes(user.role);
   };
 
@@ -74,6 +92,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         loading,
         login,
+        register,
+        loginWithGoogle,
         logout,
         isAuthenticated: !!user,
         hasRole,

@@ -23,9 +23,12 @@ export const createCompanySchema = z.object({
     email: z.string().email('E-mail da empresa inválido.').optional(),
     phone: z.string().optional(),
     address: z.string().optional(),
+    neighborhood: z.string().optional(),
     city: z.string().optional(),
     state: z.string().optional(),
     postalCode: z.string().optional(),
+    useTimeTracking: z.string().optional(),
+    contactName: z.string().optional(),
     providerId: z.string().uuid('ID de prestadora inválido.').optional(),
   }),
 });
