@@ -1,24 +1,12 @@
-# Dependências
 node_modules/
-
-# Builds
+.next/
+out/
+build/
 dist/
-dist-ssr/
-
-# Arquivos de Ambiente
+coverage/
 .env
-*.env
-*.local
-
-# Banco de dados SQLite local
-backend/dev.db
-backend/dev.db-journal
-
-# Logs
+.env.*
+!.env.example
 *.log
-npm-debug.log*
-
-# Sistema Operacional e IDE
 .DS_Store
-.vscode/
-.idea/
+Thumbs.db
