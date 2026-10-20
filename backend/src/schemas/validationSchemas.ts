@@ -3,12 +3,16 @@ import { UserRole, CompanyType } from '../types/roles.js';
 
 export const loginSchema = z.object({
   body: z.object({
-    email: z
-      .string({ required_error: 'O e-mail é obrigatório.' })
-      .email('Formato de e-mail inválido.'),
-    password: z
-      .string({ required_error: 'A senha é obrigatória.' })
-      .min(6, 'A senha deve ter no mínimo 6 caracteres.'),
+    email: z.string({ required_error: 'O usuário ou e-mail é obrigatório.' }).min(1, 'Informe o usuário ou e-mail.'),
+    password: z.string({ required_error: 'A senha é obrigatória.' }).min(1, 'Informe a senha.'),
+  }),
+});
+
+export const registerSchema = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    email: z.string({ required_error: 'O usuário ou e-mail é obrigatório.' }).min(1, 'Informe o usuário ou e-mail.'),
+    password: z.string({ required_error: 'A senha é obrigatória.' }).min(1, 'Informe a senha.'),
   }),
 });
 

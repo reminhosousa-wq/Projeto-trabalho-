@@ -8,8 +8,8 @@ import { env } from '../config/env.js';
 
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
-function formatNameFromEmail(email: string): string {
-  const [localPart] = email.split('@');
+function formatNameFromEmail(identifier: string): string {
+  const [localPart] = identifier.split('@');
   return localPart
     .replace(/[._-]/g, ' ')
     .split(' ')
@@ -18,11 +18,28 @@ function formatNameFromEmail(email: string): string {
     .join(' ');
 }
 
-export async function loginService(email: string, plainPassword: string) {
-  const normalizedEmail = email.trim().toLowerCase();
+export async function loginService(loginOrEmail: string, plainPassword: string) {
+  if (!loginOrEmail || !loginOrEmail.trim()) {
+    throw new AppError('Informe seu usuário ou e-mail.', 400);
+  }
+  if (!plainPassword) {
+    throw new AppError('Informe sua senha de acesso.', 400);
+  }
 
-  let user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
+  const rawInput = loginOrEmail.trim().toLowerCase();
+  const normalizedEmail = rawInput.includes('@') ? rawInput : `${rawInput}@sistema.local`;
+  const extractedUsername = rawInput.includes('@') ? rawInput.split('@')[0] : rawInput;
+
+  // Busca o usuário tanto por e-mail quanto por nome de usuário (username)
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: rawInput },
+        { email: normalizedEmail },
+        { username: rawInput },
+        { username: extractedUsername },
+      ],
+    },
     include: {
       company: {
         select: {
@@ -36,19 +53,15 @@ export async function loginService(email: string, plainPassword: string) {
     },
   });
 
-  // Requisito: "faça com que qualquer email com a senha correta, possa logar"
-  // Se o usuário ainda não existe no sistema, cria automaticamente o cadastro no primeiro acesso
+  // Se o usuário ainda não existe no sistema, cria e salva no banco de dados automaticamente
   if (!user) {
-    if (!plainPassword || plainPassword.length < 6) {
-      throw new AppError('A senha deve conter no mínimo 6 caracteres.', 400);
-    }
-
     const passwordHash = await hashPassword(plainPassword);
-    const generatedName = formatNameFromEmail(normalizedEmail) || 'Usuário';
+    const generatedName = formatNameFromEmail(extractedUsername) || extractedUsername;
 
     user = await prisma.user.create({
       data: {
         name: generatedName,
+        username: extractedUsername,
         email: normalizedEmail,
         passwordHash,
         role: UserRole.CLIENT_USER,
@@ -75,7 +88,7 @@ export async function loginService(email: string, plainPassword: string) {
 
     const isPasswordValid = await comparePassword(plainPassword, user.passwordHash);
     if (!isPasswordValid) {
-      throw new AppError('Senha incorreta para o e-mail informado.', 401);
+      throw new AppError('Senha incorreta para o usuário ou e-mail informado.', 401);
     }
 
     // Atualiza data do último login
@@ -99,6 +112,7 @@ export async function loginService(email: string, plainPassword: string) {
     user: {
       id: user.id,
       name: user.name,
+      username: user.username,
       email: user.email,
       role: user.role,
       avatarUrl: user.avatarUrl,
@@ -109,26 +123,41 @@ export async function loginService(email: string, plainPassword: string) {
   };
 }
 
-export async function registerService(name: string, email: string, plainPassword: string) {
-  const normalizedEmail = email.trim().toLowerCase();
+export async function registerService(name: string | undefined, loginOrEmail: string, plainPassword: string) {
+  if (!loginOrEmail || !loginOrEmail.trim()) {
+    throw new AppError('Informe o nome de usuário ou e-mail desejado.', 400);
+  }
+  if (!plainPassword) {
+    throw new AppError('A senha é obrigatória.', 400);
+  }
 
-  const existing = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
+  const rawInput = loginOrEmail.trim().toLowerCase();
+  const normalizedEmail = rawInput.includes('@') ? rawInput : `${rawInput}@sistema.local`;
+  const extractedUsername = rawInput.includes('@') ? rawInput.split('@')[0] : rawInput;
+
+  // Verifica se o usuário já existe no banco
+  const existing = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: rawInput },
+        { email: normalizedEmail },
+        { username: rawInput },
+        { username: extractedUsername },
+      ],
+    },
   });
 
   if (existing) {
-    throw new AppError('Já existe um usuário cadastrado com este e-mail.', 409);
-  }
-
-  if (!plainPassword || plainPassword.length < 6) {
-    throw new AppError('A senha deve ter no mínimo 6 caracteres.', 400);
+    throw new AppError('Este usuário já está cadastrado no sistema. Faça login diretamente.', 409);
   }
 
   const passwordHash = await hashPassword(plainPassword);
+  const displayName = name?.trim() || formatNameFromEmail(extractedUsername) || extractedUsername;
 
   const newUser = await prisma.user.create({
     data: {
-      name: name.trim() || formatNameFromEmail(normalizedEmail),
+      name: displayName,
+      username: extractedUsername,
       email: normalizedEmail,
       passwordHash,
       role: UserRole.CLIENT_USER,
@@ -160,6 +189,7 @@ export async function registerService(name: string, email: string, plainPassword
     user: {
       id: newUser.id,
       name: newUser.name,
+      username: newUser.username,
       email: newUser.email,
       role: newUser.role,
       avatarUrl: newUser.avatarUrl,
@@ -184,7 +214,6 @@ export async function googleLoginService(dto: GoogleAuthDTO) {
   let googleSub = dto.googleId;
   let googlePicture = dto.avatarUrl;
 
-  // Se o Google Client ID estiver configurado e veio token JWT do Google (credential)
   if (dto.credential) {
     try {
       if (env.GOOGLE_CLIENT_ID) {
@@ -200,7 +229,6 @@ export async function googleLoginService(dto: GoogleAuthDTO) {
           googlePicture = payload.picture;
         }
       } else {
-        // Fallback: decodifica payload base64 do JWT para ambiente local/desenvolvimento
         const parts = dto.credential.split('.');
         if (parts.length === 3) {
           const payloadJson = Buffer.from(parts[1], 'base64').toString('utf-8');
@@ -212,18 +240,24 @@ export async function googleLoginService(dto: GoogleAuthDTO) {
         }
       }
     } catch (err) {
-      console.warn('[Google Auth] Erro ao validar token oficial Google, utilizando dados fornecidos:', err);
+      console.warn('[Google Auth] Erro ao validar token oficial Google:', err);
     }
   }
 
   if (!googleEmail) {
-    throw new AppError('Não foi possível identificar o e-mail da conta Google.', 400);
+    throw new AppError('Não foi possível identificar a conta Google.', 400);
   }
 
   const normalizedEmail = googleEmail.trim().toLowerCase();
+  const extractedUsername = normalizedEmail.split('@')[0];
 
-  let user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: normalizedEmail },
+        { googleId: googleSub },
+      ],
+    },
     include: {
       company: {
         select: {
@@ -238,12 +272,12 @@ export async function googleLoginService(dto: GoogleAuthDTO) {
   });
 
   if (!user) {
-    // Cria automaticamente o usuário autenticado via Google
     const dummyPassword = await hashPassword(`google_${Date.now()}_${Math.random()}`);
 
     user = await prisma.user.create({
       data: {
-        name: googleName || formatNameFromEmail(normalizedEmail),
+        name: googleName || formatNameFromEmail(extractedUsername),
+        username: extractedUsername,
         email: normalizedEmail,
         passwordHash: dummyPassword,
         googleId: googleSub || null,
@@ -269,7 +303,6 @@ export async function googleLoginService(dto: GoogleAuthDTO) {
       throw new AppError('Esta conta de usuário está desativada no momento.', 403);
     }
 
-    // Atualiza avatar, googleId e último acesso
     user = await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -305,6 +338,7 @@ export async function googleLoginService(dto: GoogleAuthDTO) {
     user: {
       id: user.id,
       name: user.name,
+      username: user.username,
       email: user.email,
       role: user.role,
       avatarUrl: user.avatarUrl,
@@ -321,6 +355,7 @@ export async function getMeService(userId: string) {
     select: {
       id: true,
       name: true,
+      username: true,
       email: true,
       role: true,
       avatarUrl: true,
