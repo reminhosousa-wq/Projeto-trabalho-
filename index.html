@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Folha de pagamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F4F1;--sf:#fff;--ink:#20262E;--mu:#5E6772;--ln:#D9DCD6;--ac:#2F5D50;--ach:#234A3F;--wn:#9A5B13;--er:#9B2C2C;--sel:#E6EDEA;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171A1D;--sf:#1F2326;--ink:#E4E7E3;--mu:#98A19C;--ln:#33393B;--ac:#7FB5A3;--ach:#9CCBBB;--wn:#D9A15A;--er:#E58A8A;--sel:#27312E}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Public Sans",system-ui,"Segoe UI",Arial,sans-serif;font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}
+aside{border-right:1px solid var(--ln);padding:22px 0;background:var(--sf);position:sticky;top:0;height:100vh;overflow:auto}
+.brand{padding:0 22px 18px;border-bottom:1px solid var(--ln);margin-bottom:10px}
+.brand b{display:block;font-size:17px;letter-spacing:-.01em}.brand small{color:var(--mu)}
+nav a{display:block;padding:9px 22px;color:var(--mu);text-decoration:none;border-left:3px solid transparent;cursor:pointer}
+nav a:hover{color:var(--ink)}nav a.on{color:var(--ink);font-weight:600;border-left-color:var(--ac);background:var(--sel)}
+nav h6{margin:16px 22px 4px;font-size:12px;font-weight:600;color:var(--mu)}
+.me{padding:16px 22px 0;margin-top:14px;border-top:1px solid var(--ln);font-size:13px;color:var(--mu)}
+.me button{margin-top:6px}
+main{padding:28px 34px 60px;max-width:1080px;width:100%}
+h1{font-size:24px;margin:0 0 4px;letter-spacing:-.015em}
+.sub{color:var(--mu);margin:0 0 22px;max-width:64ch}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:16px}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:3px;padding:8px 14px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ach)}
+.btn.g{background:transparent;color:var(--ink);border:1px solid var(--ln)}.btn.g:hover{background:var(--sel)}
+.lk{background:none;border:0;color:var(--ac);cursor:pointer;padding:0 6px;text-decoration:underline}.lk.d{color:var(--er)}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--mu)}
+input,select{background:var(--sf);border:1px solid var(--ln);border-radius:3px;padding:7px 9px;color:var(--ink);min-width:0}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:3px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-weight:600;font-size:13px;color:var(--mu);padding:9px 14px;border-bottom:1px solid var(--ln);white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid var(--ln);vertical-align:top}tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right}
+.empty{padding:26px 18px;color:var(--mu)}
+.tag{font-size:12px;border:1px solid var(--ln);border-radius:3px;padding:1px 6px;color:var(--mu)}.tag.w{color:var(--wn);border-color:var(--wn)}
+dialog{border:1px solid var(--ln);border-radius:4px;padding:0;background:var(--sf);color:var(--ink);width:min(720px,94vw);max-height:92vh}
+dialog::backdrop{background:rgba(20,24,22,.45)}
+dialog form{padding:22px 24px}dialog h2{margin:0 0 14px;font-size:19px}
+fieldset{border:0;border-top:1px solid var(--ln);margin:16px 0 0;padding:12px 0 0}legend{font-weight:600;padding:0 8px 0 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.w2{grid-column:span 2}
+.fl{display:flex;gap:8px;margin-bottom:8px}.fl input{flex:1}
+.acts{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.login{max-width:380px;margin:12vh auto;background:var(--sf);border:1px solid var(--ln);border-radius:3px;padding:28px}
+.login form{display:grid;gap:14px}.login h1{font-size:21px}
+.err{color:var(--er);font-size:13px;min-height:18px}
+.st{background:var(--sf);border:1px solid var(--ln);border-radius:3px;margin-bottom:16px}
+.st h3{margin:0;padding:10px 16px;font-size:14px;border-bottom:1px solid var(--ln);background:var(--sel)}
+.ln{display:flex;justify-content:space-between;gap:16px;padding:8px 16px;border-bottom:1px solid var(--ln)}
+.ln:last-child{border-bottom:0}.ln span:first-child small{display:block;color:var(--mu)}
+.ln.t{font-weight:600}
+.liq{display:flex;justify-content:space-between;align-items:baseline;padding:16px;font-size:20px;font-weight:700}
+.sum{display:flex;gap:28px;flex-wrap:wrap;margin:0 0 16px;font-size:14px}.sum b{display:block;font-size:20px}
+@media(max-width:780px){.app{grid-template-columns:minmax(0,1fr)}aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--ln)}nav{display:flex;overflow-x:auto}nav h6{display:none}nav a{white-space:nowrap;border-left:0;border-bottom:3px solid transparent;padding:9px 14px}nav a.on{border-bottom-color:var(--ac)}main{padding:20px 16px 50px}.g2{grid-template-columns:1fr}.w2{grid-column:auto}}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.cc h2{margin:0 0 2px}
+@media(max-width:780px){.g4{grid-template-columns:1fr 1fr}}
+@media print{aside,.noprint,.bar{display:none!important}.app{display:block}main{padding:0;max-width:none}body{background:#fff;color:#000}body.pc .app{display:none}body.pc dialog{position:static;width:100%;max-height:none;border:0}dialog::backdrop{display:none}}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:3px;z-index:1000;max-width:90vw;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+dialog#dlg2{width:min(420px,92vw)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<dialog id="dlg"><form id="frm" onsubmit="return false"></form></dialog>
+<dialog id="dlg2"><div id="d2" style="padding:22px 24px"></div></dialog>
+<div id="toast" hidden role="status"></div>
+<script>
+const $=s=>document.querySelector(s),E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R=n=>(+n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),U=()=>Math.random().toString(36).slice(2,9),r2=x=>Math.round((+x||0)*100)/100,N=x=>+x||0;
+const dt=d=>d?d.split('-').reverse().join('/'):'—',NOME='Contabilidade Modelo';
+const H=s=>{let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);return(4294967296*(2097151&b)+(a>>>0)).toString(36)};
+const hs=(l,s)=>H('cm|'+l+'|'+s);
+const RUB=[['Salário-base','Provento','','Salário do cadastro do funcionário'],['Horas extras','Provento','50','Valor da hora mais percentual'],['Adicional noturno','Provento','20','Horas noturnas × valor da hora × percentual'],['Férias','Provento','','Dias de férias ÷ 30 × salário'],['1/3 de férias','Provento','','Um terço do valor das férias'],['13º salário','Provento','','Salário × meses trabalhados ÷ 12'],['INSS','Desconto','','Tabela progressiva (abaixo)'],['Faltas','Desconto','','Salário ÷ 30 × dias de falta'],['Atrasos','Desconto','','Horas de atraso × valor da hora'],['Adiantamento salarial','Desconto','','Valor lançado na folha'],['FGTS','Informativo','8','Percentual sobre os proventos; não é descontado']];
+const def=()=>({users:[],empresas:[],cargos:[],funcionarios:[],ponto:[],folhas:[],cfg:{tol:5,lim:120,inss:[[1621,7.5],[2902.84,9],[4354.27,12],[8475.55,14]]},
+horarios:[{id:'h40',nome:'40 horas semanais',semanal:40,dist:'Segunda a sexta-feira, 8 horas por dia'},{id:'h44',nome:'44 horas semanais',semanal:44,dist:'Segunda a sexta-feira, 8 horas por dia, e sábado, 4 horas'}],
+rubricas:RUB.map((r,i)=>({id:'r'+i,nome:r[0],tipo:r[1],pct:r[2],base:r[3],ativa:'Sim',fixo:true}))});
+let db=def();
+try{const s=localStorage.getItem('cm_db2');if(s)db=Object.assign(def(),JSON.parse(s))}catch(e){}
+const save=()=>{try{localStorage.setItem('cm_db2',JSON.stringify(db))}catch(e){}};
+let me=null,route='folha',ui={q:'',qc:'',fe:'',ff:'',fc:new Date().toISOString().slice(0,7),lk:'',lc:{}};
+const adm=()=>!!me&&me.perfil!=='Operador',mestre=()=>!!me&&me.perfil==='Mestre';
+const sn=[['Sim','Sim'],['Não','Não']],opt=a=>a.map(x=>[x,x]);
+const emps=()=>db.empresas.map(e=>[e.id,e.fantasia||e.razao]),cargos=()=>db.cargos.map(c=>[c.id,c.codigo+' · '+c.nome]),hors=()=>db.horarios.map(h=>[h.id,h.nome]);
+const cn=id=>{const c=db.cargos.find(x=>x.id===id);return c?c.codigo+' · '+c.nome:'—'},en=id=>{const e=db.empresas.find(x=>x.id===id);return e?(e.fantasia||e.razao):'—'};
+const hor=f=>db.horarios.find(x=>x.id===f.horarioId),svd=(fid,c)=>db.folhas.find(x=>x.fid===fid&&x.comp===c);
+const S={
+empresas:[{k:'razao',l:'Razão social',req:1,w:'w2'},{k:'cnpj',l:'CNPJ',req:1},{k:'fantasia',l:'Nome fantasia'},{k:'endereco',l:'Endereço',w:'w2'},{k:'telefone',l:'Telefone'},{k:'email',l:'E-mail',t:'email'},{k:'usaPonto',l:'Usa o controle de ponto?',req:1,o:()=>[['Sim','Sim'],['Não','Não, apenas folha']]}],
+cargos:[{k:'codigo',l:'Código',req:1},{k:'nome',l:'Nome do cargo',req:1},{k:'salario',l:'Salário de referência (R$)',t:'number'}],
+horarios:[{k:'nome',l:'Nome',req:1},{k:'semanal',l:'Horas semanais',t:'number',req:1},{k:'dist',l:'Distribuição',w:'w2'}],
+rubricas:[{k:'nome',l:'Nome',req:1},{k:'tipo',l:'Tipo',o:()=>opt(['Provento','Desconto','Informativo','Redutor'])},{k:'base',l:'Como é calculada',w:'w2'},{k:'pct',l:'Percentual (%)',t:'number'},{k:'ativa',l:'Em uso',o:()=>sn}],
+users:[{k:'nome',l:'Nome',req:1},{k:'login',l:'Usuário',req:1},{k:'perfil',l:'Perfil',req:1,o:()=>opt(['Mestre','Gerente','Operador'])},{k:'senha',l:'Senha',t:'password'}],
+fA:[{k:'nome',l:'Nome completo',req:1,w:'w2'},{k:'cpf',l:'CPF',req:1},{k:'rg',l:'RG'},{k:'endereco',l:'Endereço',w:'w2'},{k:'civil',l:'Estado civil',o:()=>opt(['Solteiro(a)','Casado(a)','União estável','Divorciado(a)','Viúvo(a)'])},{k:'nasc',l:'Data de nascimento',t:'date'},{k:'pis',l:'PIS'}],
+fB:[{k:'empresaId',l:'Empresa cliente',req:1,o:emps},{k:'admissao',l:'Data de admissão',t:'date',req:1},{k:'cargoId',l:'Cargo',req:1,o:cargos},{k:'contrato',l:'Tipo de contrato',o:()=>opt(['Prazo indeterminado','Prazo determinado'])},{k:'horarioId',l:'Regime de jornada',o:hors,req:1},{k:'salario',l:'Salário-base (R$)',t:'number',req:1},{k:'entrada',l:'Horário de entrada',t:'time'},{k:'saida',l:'Horário de saída',t:'time'}],
+fC:[{k:'banco',l:'Banco'},{k:'agencia',l:'Agência'},{k:'conta',l:'Conta'},{k:'tipoConta',l:'Tipo de conta',o:()=>opt(['Corrente','Poupança'])}]};
+const inp=(f,v,lock)=>{v=v==null?'':v;if(f.o)return`<select name="${f.k}" ${f.req?'required':''}><option value="">Selecione</option>${f.o().map(o=>`<option value="${E(o[0])}" ${o[0]==v?'selected':''}>${E(o[1])}</option>`).join('')}</select>`;
+return`<input name="${f.k}" type="${f.t||'text'}" ${f.t==='number'?'step="any"':''} value="${f.t==='password'?'':E(v)}" ${f.req?'required':''}>`};
+const fields=(sc,v)=>`<div class="g2">${sc.map(f=>`<label class="${f.w||''}"><span>${f.l}${f.req?' *':''}</span>${inp(f,v[f.k])}</label>`).join('')}</div>`;
+let onSave=null;
+const dlg=()=>$('#dlg');
+function openForm(t,html,cb){$('#frm').innerHTML=`<h2>${t}</h2>${html}<div class="err" id="ferr"></div><div class="acts"><button type="button" class="btn g" data-a="x">Cancelar</button><button type="button" class="btn" data-a="ok">Salvar</button></div>`;onSave=cb;dlg().showModal()}
+function info(t,html){$('#frm').innerHTML=`<h2>${t}</h2>${html}<div class="acts"><button type="button" class="btn g" data-a="x">Fechar</button></div>`;onSave=null;dlg().showModal()}
+function doSave(){const fm=$('#frm');if(!onSave){dlg().close();return}if(!fm.reportValidity())return;const fd=new FormData(fm),o={};for(const[k,v]of fd.entries()){o[k]=v}const r=onSave(o,fd);if(typeof r==='string'){const e=$('#ferr');if(e)e.textContent=r;return}dlg().close();draw()}
+let askCb=null;const say=m=>{const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(say.t);say.t=setTimeout(()=>{t.hidden=true},6000)};
+const ask=(m,cb)=>{askCb=cb;$('#d2').innerHTML=`<p style="margin:0 0 18px">${E(m)}</p><div class="acts" style="margin:0"><button type="button" class="btn g" data-a="no">Cancelar</button><button type="button" class="btn" data-a="yes">Sim</button></div>`;$('#dlg2').showModal()};
+dlg().addEventListener('close',()=>document.body.classList.remove('pc'));
+const filhoRow=(n,d)=>`<div class="fl"><input name="fn" placeholder="Nome do filho" value="${E(n)}"><input name="fd" type="date" value="${E(d)}" aria-label="Nascimento do filho"><button type="button" class="lk d" data-a="rmf">Remover</button></div>`;
+function tbl(cols,rows,empty){return rows.length?`<div class="card"><table><thead><tr>${cols.map(c=>`<th class="${c.n?'n':''}">${c.h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`:`<div class="card empty">${empty}</div>`}
+function crud(k,t,sub,cols,o){o=o||{};const rows=db[k].map(r=>{const del=adm()&&!(o.noDel&&o.noDel(r));return`<tr>${cols.map(c=>`<td>${E(c.f?c.f(r):r[c.k])}</td>`).join('')}<td class="n">${o.extra?o.extra(r):''}<button class="lk" data-a="ed" data-k="${k}" data-id="${r.id}">Editar</button>${del?`<button class="lk d" data-a="del" data-k="${k}" data-id="${r.id}">Excluir</button>`:''}</td></tr>`});
+return`<h1>${t}</h1><p class="sub">${sub}</p><div class="bar"><button class="btn" data-a="new" data-k="${k}">Novo cadastro</button></div>${tbl(cols.map(c=>({h:c.h})).concat([{h:''}]),rows,'Nada cadastrado ainda. Use “Novo cadastro” para começar.')}`}
+const cpfOk=c=>{c=String(c).replace(/\D/g,'');if(c.length!==11||/^(\d)\1+$/.test(c))return false;for(let t=9;t<11;t++){let s=0;for(let i=0;i<t;i++)s+=c[i]*(t+1-i);if((s*10%11)%10!=c[t])return false}return true};
+const dig=s=>String(s||'').replace(/\D/g,'');
+const HK={
+empresas:(o,v)=>{if(dig(o.cnpj).length!==14)return'O CNPJ deve ter 14 dígitos.';if(db.empresas.some(e=>dig(e.cnpj)===dig(o.cnpj)&&e.id!==v.id))return'Já existe uma empresa com esse CNPJ.'},
+cargos:(o,v)=>{if(db.cargos.some(c=>c.codigo.trim().toLowerCase()===o.codigo.trim().toLowerCase()&&c.id!==v.id))return'Já existe um cargo com esse código.'},
+funcionarios:(o,v)=>{if(!cpfOk(o.cpf))return'CPF inválido. Confira os números.';if(db.funcionarios.some(f=>dig(f.cpf)===dig(o.cpf)&&f.id!==v.id))return'Já existe um funcionário com esse CPF.'},
+users:(o,v)=>{if(!v.id&&!o.senha)return'Informe a senha.';if(db.users.some(u=>u.login===o.login&&u.id!==v.id))return'Esse usuário já existe.';
+if(v.id&&o.login!==v.login&&!o.senha)return'Ao trocar o usuário, informe também a senha.';
+if(v.id&&v.perfil==='Mestre'&&o.perfil!=='Mestre'&&db.users.filter(u=>u.perfil==='Mestre').length<2)return'Mantenha ao menos um usuário mestre.';
+if(o.senha)o.senha=hs(o.login,o.senha);else delete o.senha}};
+function edit(k,id){const v=db[k].find(x=>x.id===id)||{};let h;
+if(k==='funcionarios'){h=`<fieldset><legend>Dados pessoais e documentos</legend>${fields(S.fA,v)}<p style="margin:14px 0 6px;font-size:13px;color:var(--mu)">Filhos</p><div id="fls">${(v.filhos||[]).map(x=>filhoRow(x.n,x.d)).join('')}</div><button type="button" class="btn g" data-a="addf">Adicionar filho</button></fieldset><fieldset><legend>Dados contratuais</legend>${fields(S.fB,v)}</fieldset><fieldset><legend>Dados bancários</legend>${fields(S.fC,v)}</fieldset>`}
+else h=fields(S[k],v);
+openForm((id?'Editar':'Novo')+' cadastro',h,(o,fd)=>{const r=HK[k]&&HK[k](o,v);if(typeof r==='string')return r;
+if(k==='funcionarios'){const a=fd.getAll('fn'),b=fd.getAll('fd');o.filhos=a.map((x,i)=>({n:x,d:b[i]})).filter(x=>x.n);delete o.fn;delete o.fd}
+if(id)Object.assign(v,o);else{o.id=U();if(k==='rubricas')o.fixo=false;db[k].push(o)}save();if(me&&k==='users'&&me.id===v.id)me=db.users.find(u=>u.id===v.id)||me})}
+const inUse={empresas:r=>db.funcionarios.some(f=>f.empresaId===r.id)&&'funcionários',cargos:r=>db.funcionarios.some(f=>f.cargoId===r.id)&&'funcionários',horarios:r=>db.funcionarios.some(f=>f.horarioId===r.id)&&'funcionários',funcionarios:r=>db.folhas.some(x=>x.fid===r.id)&&'folhas salvas'};
+function del(k,id){const r=db[k].find(x=>x.id===id);if(!r)return;if(k==='users'&&(r.id===me.id||(r.perfil==='Mestre'&&db.users.filter(u=>u.perfil==='Mestre').length<2))){say('Não é possível excluir este usuário.');return}
+const u=inUse[k]&&inUse[k](r);if(u){say('Este cadastro está em uso por '+u+' e não pode ser excluído.');return}
+ask('Excluir este cadastro?',()=>{db[k]=db[k].filter(x=>x.id!==id);if(k==='funcionarios')db.ponto=db.ponto.filter(p=>p.fid!==id);save();draw()})}
+const mn=t=>{if(!t)return null;const a=t.split(':');return+a[0]*60+ +a[1]},hm=x=>Math.floor(x/60)+'h'+String(Math.round(x%60)).padStart(2,'0');
+function apur(f,comp){const r={faltas:0,fj:0,atr:0,ext:0,dias:0},h=hor(f),sem=h?h.semanal:44,tol=N(db.cfg.tol),lim=N(db.cfg.lim);
+db.ponto.filter(p=>p.fid===f.id&&p.data.startsWith(comp)).forEach(p=>{if(p.tipo==='Falta'){r.faltas++;return}if(p.tipo==='Falta justificada'){r.fj++;return}r.dias++;
+const t=p.aj||p,d=new Date(p.data+'T12:00').getDay(),exp=d>=1&&d<=5?480:(d===6&&sem>=44?240:0),e1=mn(t.e1),s1=mn(t.s1),e2=mn(t.e2),s2=mn(t.s2);let w=0;
+if(e1!=null&&s1!=null&&e2!=null&&s2!=null)w=(s1-e1)+(s2-e2);else if(e1!=null&&s2!=null)w=s2-e1-60;
+const ent=mn(f.entrada);if(ent!=null&&e1!=null&&e1-ent>tol)r.atr+=e1-ent;if(w-exp>tol)r.ext+=Math.min(w-exp,lim)});return r}
+function inss(b){let p=0,t=0;db.cfg.inss.forEach(x=>{if(b>p)t+=(Math.min(b,x[0])-p)*x[1]/100;p=x[0]});return r2(t)}
+function calc(f,L){const h=hor(f),sal=N(f.salario),vh=sal/((h?h.semanal:44)*5),rb=n=>db.rubricas.find(r=>r.nome===n)||{},on=n=>rb(n).ativa==='Sim',pc=(n,d)=>{const p=rb(n).pct;return p===''||p==null?d:+p};
+const P=[],D=[],I=[],add=(A,n,v,d)=>{v=r2(v);if(v)A.push([n,v,d||''])},fer=Math.min(30,N(L.fer));
+add(P,'Salário-base',sal/30*(30-fer),fer?(30-fer)+' dias trabalhados':'');
+if(on('Horas extras'))add(P,'Horas extras',N(L.ext)*vh*(1+pc('Horas extras',50)/100),N(L.ext)+' h a '+pc('Horas extras',50)+'%');
+if(on('Adicional noturno'))add(P,'Adicional noturno',N(L.not)*vh*pc('Adicional noturno',20)/100,N(L.not)+' h noturnas');
+if(fer&&on('Férias'))add(P,'Férias',sal/30*fer,fer+' dias');
+if(fer&&on('1/3 de férias'))add(P,'1/3 de férias',sal/30*fer/3);
+(L.out||[]).forEach(o=>{const r=db.rubricas.find(x=>x.id===o.rid),v=N(o.v);if(!r||!v)return;if(r.tipo==='Provento')add(P,r.nome,v);else if(r.tipo==='Redutor')add(P,r.nome,-v,'Redutor');else if(r.tipo==='Desconto')add(D,r.nome,v);else add(I,r.nome,v)});
+const bi=P.reduce((a,x)=>a+x[1],0),t13=sal*N(L.avos)/12;
+if(on('13º salário')){if(L.dec==='1ª parcela')add(P,'13º salário, 1ª parcela',t13/2,'Sem descontos');else if(L.dec==='2ª parcela'){add(P,'13º salário, 2ª parcela',t13/2,'Restante do 13º');if(on('INSS'))add(D,'INSS sobre o 13º',inss(t13))}else if(L.dec==='Parcela única'){add(P,'13º salário',t13,N(L.avos)+'/12');if(on('INSS'))add(D,'INSS sobre o 13º',inss(t13))}}
+if(on('INSS'))add(D,'INSS',inss(bi),'Tabela progressiva sobre '+R(bi));
+if(on('Faltas'))add(D,'Faltas',sal/30*N(L.faltas),N(L.faltas)+' dia(s)');
+if(on('Atrasos'))add(D,'Atrasos',N(L.atr)*vh,N(L.atr)+' h');
+if(on('Adiantamento salarial'))add(D,'Adiantamento salarial',N(L.adi));
+const prov=r2(P.reduce((a,x)=>a+x[1],0)),desc=r2(D.reduce((a,x)=>a+x[1],0));
+if(on('FGTS'))add(I,'FGTS',prov*pc('FGTS',8)/100,'Informativo, não é descontado do funcionário');add(I,'Base de cálculo do INSS',bi);
+return{P,D,I,prov,desc,liq:r2(prov-desc),vh}}
+function initLc(f){const k=f.id+'|'+ui.fc;if(ui.lk===k)return;ui.lk=k;const s=svd(f.id,ui.fc);if(s){ui.lc=JSON.parse(JSON.stringify(s.lanc));return}
+const emp=db.empresas.find(e=>e.id===f.empresaId),a=emp&&emp.usaPonto==='Sim'?apur(f,ui.fc):{faltas:0,atr:0,ext:0};
+ui.lc={faltas:a.faltas,ext:r2(a.ext/60),atr:r2(a.atr/60),not:0,fer:0,dec:'Não',avos:12,adi:0,out:[]}}
+const ln=(a,v,s)=>`<div class="ln"><span>${a}${s?`<small>${E(s)}</small>`:''}</span><span>${v}</span></div>`;
+const lines=A=>A.length?A.map(x=>ln(E(x[0]),R(x[1]),x[2])).join(''):ln('<span style="color:var(--mu)">Nenhum valor</span>','');
+const sel=(id,l,items,cur,ph)=>`<label>${l}<select id="${id}"><option value="">${ph||'Selecione'}</option>${items.map(o=>`<option value="${o[0]}" ${o[0]===cur?'selected':''}>${E(o[1])}</option>`).join('')}</select></label>`;
+const stTag=s=>`<span class="tag ${s==='Fechada'?'':'w'}">${s}</span>`;
+function cc(x){const f=db.funcionarios.find(y=>y.id===x.fid)||{},e=db.empresas.find(y=>y.id===x.emp)||{};
+const rows=x.prov.map(y=>`<tr><td>${E(y[0])}</td><td class="n">${R(y[1])}</td><td></td></tr>`).concat(x.desc.map(y=>`<tr><td>${E(y[0])}</td><td></td><td class="n">${R(y[1])}</td></tr>`)).join('');
+return`<div class="cc"><h2>Contracheque</h2><p class="sub">Competência ${dt(x.comp+'-01').slice(3)}</p><div class="g2" style="margin-bottom:14px"><div><b>${E(e.razao)}</b><br>CNPJ ${E(e.cnpj)}</div><div><b>${E(f.nome)}</b><br>CPF ${E(f.cpf)}<br>${E(cn(f.cargoId))}</div></div><div class="card"><table><thead><tr><th>Descrição</th><th class="n">Proventos</th><th class="n">Descontos</th></tr></thead><tbody>${rows}<tr><td><b>Totais</b></td><td class="n"><b>${R(x.tp)}</b></td><td class="n"><b>${R(x.td)}</b></td></tr></tbody></table></div><div class="liq"><span>Líquido a receber</span><span>${R(x.liq)}</span></div>${x.info.map(y=>ln(E(y[0]),R(y[1]),y[2])).join('')}<p style="margin-top:34px;border-top:1px solid var(--ln);padding-top:6px;width:60%;font-size:13px;color:var(--mu)">Assinatura do funcionário</p></div>`}
+const res=c=>`<div class="st"><h3>2. Proventos</h3>${lines(c.P)}<div class="ln t"><span>Total de proventos</span><span>${R(c.prov)}</span></div></div>
+<div class="st"><h3>3. Descontos</h3>${lines(c.D)}<div class="ln t"><span>Total de descontos</span><span>${R(c.desc)}</span></div></div>
+<div class="st"><h3>4. Valor final</h3><div class="liq"><span>Líquido a receber</span><span>${R(c.liq)}</span></div></div>
+<div class="st"><h3>5. Informações complementares</h3>${lines(c.I)}${ln('<small>Imposto de renda</small>','<span class="tag">Fora do escopo inicial</span>')}</div>`;
+const upd=()=>{const f=db.funcionarios.find(x=>x.id===ui.ff);if(f&&$("#res"))$("#res").innerHTML=res(calc(f,ui.lc))};
+const V={
+empresas:()=>crud('empresas','Empresas clientes','Empresas atendidas pela contabilidade na folha de pagamento.',[{h:'Razão social',k:'razao'},{h:'CNPJ',k:'cnpj'},{h:'Telefone',k:'telefone'},{h:'Controle de ponto',f:r=>r.usaPonto==='Sim'?'Sim':'Apenas folha'}]),
+cargos:()=>crud('cargos','Cargos','Cada cargo tem um código próprio, escolhido no cadastro do funcionário.',[{h:'Código',k:'codigo'},{h:'Cargo',k:'nome'},{h:'Salário de referência',f:r=>r.salario?R(r.salario):'—'},{h:'Funcionários',f:r=>db.funcionarios.filter(f=>f.cargoId===r.id).length}],{extra:r=>`<button class="lk" data-a="vc" data-id="${r.id}">Ver funcionários</button>`}),
+horarios:()=>crud('horarios','Horários e jornadas','Jornadas que podem ser associadas ao funcionário, mesmo quando a empresa não usa o ponto.',[{h:'Jornada',k:'nome'},{h:'Horas semanais',k:'semanal'},{h:'Distribuição',k:'dist'}]),
+rubricas:()=>crud('rubricas','Rubricas','Proventos, descontos, informativos e redutores usados na folha. Redutor abate valor do total de proventos. Rubricas criadas aqui podem ser lançadas na folha em “Outros lançamentos”.',[{h:'Rubrica',k:'nome'},{h:'Tipo',k:'tipo'},{h:'Como é calculada',k:'base'},{h:'Percentual',f:r=>r.nome==='INSS'?'Tabela':(r.pct!==''&&r.pct!=null?r.pct+'%':'—')},{h:'Em uso',k:'ativa'}],{noDel:r=>r.fixo})+`<h2 style="font-size:17px;margin:26px 0 6px">Tabela do INSS</h2><p class="sub">Faixas progressivas de 2026 (Portaria Interministerial MPS/MF nº 13/2026). Atualize no início de cada ano.</p><div class="card"><table><thead><tr><th>Faixa</th><th>Até (R$)</th><th>Alíquota (%)</th></tr></thead><tbody>${db.cfg.inss.map((x,i)=>`<tr><td>${i+1}ª</td><td><input type="number" step="any" data-inss="${i}:0" value="${x[0]}"></td><td><input type="number" step="any" data-inss="${i}:1" value="${x[1]}"></td></tr>`).join('')}</tbody></table></div>`,
+users:()=>crud('users','Usuários','Mestre: acesso total e gestão de usuários. Gerente: cadastros, rubricas, conferência e fechamento. Operador: lança e consulta, sem excluir, conferir ou fechar.',[{h:'Nome',k:'nome'},{h:'Usuário',k:'login'},{h:'Perfil',k:'perfil'}]),
+funcionarios:()=>{const q=ui.q.toLowerCase(),L=db.funcionarios.filter(f=>(!q||[f.nome,f.cpf,cn(f.cargoId)].join(' ').toLowerCase().includes(q))&&(!ui.qc||f.cargoId===ui.qc));
+const rows=L.map(f=>`<tr><td>${E(f.nome)}</td><td>${E(f.cpf)}</td><td>${E(cn(f.cargoId))}</td><td>${E(en(f.empresaId))}</td><td class="n"><button class="lk" data-a="ed" data-k="funcionarios" data-id="${f.id}">Editar</button>${adm()?`<button class="lk d" data-a="del" data-k="funcionarios" data-id="${f.id}">Excluir</button>`:''}</td></tr>`);
+return`<h1>Funcionários</h1><p class="sub">Dados pessoais, contratuais e bancários. Busque por nome, CPF ou cargo, ou filtre a lista por cargo.</p><div class="bar"><label>Pesquisar<input id="q" value="${E(ui.q)}" placeholder="Nome, CPF ou cargo" style="width:260px"></label>${sel('qc','Cargo',cargos(),ui.qc,'Todos os cargos')}<button class="btn" data-a="new" data-k="funcionarios">Novo funcionário</button></div>${tbl([{h:'Nome'},{h:'CPF'},{h:'Cargo'},{h:'Empresa'},{h:''}],rows,db.funcionarios.length?'Nenhum funcionário encontrado.':'Nenhum funcionário cadastrado. Cadastre antes a empresa cliente, o cargo e a jornada.')}`},
+ponto:()=>{const fs=db.funcionarios.filter(f=>f.empresaId===ui.fe),f=fs.find(x=>x.id===ui.ff),emp=db.empresas.find(e=>e.id===ui.fe);
+const top=`<div class="bar">${sel('fe','Empresa cliente',emps(),ui.fe)}${sel('ff','Funcionário',fs.map(x=>[x.id,x.nome]),ui.ff)}<label>Competência<input id="fc" type="month" value="${ui.fc}"></label></div>`;
+let body='<div class="card empty">Escolha a empresa, o funcionário e a competência para ver as marcações.</div>';
+if(emp&&emp.usaPonto!=='Sim')body='<div class="card empty">Esta empresa usa o sistema apenas para a folha. Faltas, atrasos e horas extras são lançados direto na folha de pagamento.</div>';
+else if(f){const a=apur(f,ui.fc),P=db.ponto.filter(p=>p.fid===f.id&&p.data.startsWith(ui.fc)).sort((x,y)=>x.data<y.data?-1:1),cell=(p,k)=>E(p[k]||'—')+(p.aj?`<br><small>ajuste: ${E(p.aj[k]||'—')}</small>`:'');
+const rows=P.map(p=>{const fa=p.tipo!=='Normal';return`<tr><td>${dt(p.data)}</td><td>${fa?'—':cell(p,'e1')}</td><td>${fa?'—':cell(p,'s1')}</td><td>${fa?'—':cell(p,'e2')}</td><td>${fa?'—':cell(p,'s2')}</td><td>${fa?p.tipo:(p.aj?'Ajustado':'Normal')}${p.aj?`<br><small>${E(p.aj.motivo)} (${E(p.aj.por)})</small>`:''}</td><td class="n">${fa?'':`<button class="lk" data-a="adj" data-id="${p.id}">Ajustar</button>`}</td></tr>`});
+body=`<div class="sum"><div><b>${a.faltas}</b>faltas</div><div><b>${a.fj}</b>faltas justificadas</div><div><b>${hm(a.atr)}</b>atrasos</div><div><b>${hm(a.ext)}</b>horas extras</div></div><div class="bar"><button class="btn" data-a="mark">Registrar dia</button></div>`+tbl([{h:'Data'},{h:'Entrada'},{h:'Saída intervalo'},{h:'Retorno'},{h:'Saída'},{h:'Situação'},{h:''}],rows,'Nenhuma marcação nesta competência.')+'<p class="sub" style="margin-top:14px">As marcações originais ficam sempre registradas. O ajuste é gravado à parte, com motivo e responsável, e é ele que entra na apuração. Faltas justificadas não geram desconto.</p>'}
+return`<h1>Controle de ponto</h1><p class="sub">Entradas, saídas, faltas, atrasos e horas extras, para empresas que usam o ponto.</p>${top}${body}<div class="bar" style="margin-top:22px"><label>Tolerância de atraso (min)<input id="tol" type="number" value="${db.cfg.tol}" style="width:150px"></label><label>Limite de extras por dia (min)<input id="lim" type="number" value="${db.cfg.lim}" style="width:170px"></label></div>`},
+relatorio:()=>{const L=db.folhas.filter(x=>x.emp===ui.fe&&x.comp===ui.fc).sort((a,b)=>{const na=(db.funcionarios.find(f=>f.id===a.fid)||{}).nome||'',nb=(db.funcionarios.find(f=>f.id===b.fid)||{}).nome||'';return na.localeCompare(nb)}),sm=k=>R(L.reduce((a,x)=>a+x[k],0));
+const fg=x=>{const y=x.info.find(i=>i[0]==='FGTS');return y?y[1]:0};
+const rows=L.map(x=>{const f=db.funcionarios.find(y=>y.id===x.fid)||{};return`<tr><td>${E(f.nome)}</td><td class="n">${R(x.tp)}</td><td class="n">${R(x.td)}</td><td class="n">${R(x.liq)}</td><td class="n">${R(fg(x))}</td><td>${stTag(x.status)}</td></tr>`});
+if(L.length)rows.push(`<tr><td><b>Total</b></td><td class="n"><b>${sm('tp')}</b></td><td class="n"><b>${sm('td')}</b></td><td class="n"><b>${sm('liq')}</b></td><td class="n"><b>${R(L.reduce((a,x)=>a+fg(x),0))}</b></td><td></td></tr>`);
+return`<h1>Relatório mensal</h1><p class="sub">Folhas salvas da empresa na competência escolhida. Consulte meses anteriores trocando a competência.</p><div class="bar">${sel('fe','Empresa cliente',emps(),ui.fe)}<label>Competência<input id="fc" type="month" value="${ui.fc}"></label><button class="btn g" data-a="prt">Imprimir</button>${adm()?'<button class="btn" data-a="fcomp">Fechar competência</button>':''}</div>${ui.fe?`<p class="sub" style="margin-bottom:10px"><b>${E(en(ui.fe))}</b> · ${dt(ui.fc+'-01').slice(3)}</p>`:''}${tbl([{h:'Funcionário'},{h:'Proventos',n:1},{h:'Descontos',n:1},{h:'Líquido',n:1},{h:'FGTS',n:1},{h:'Situação'}],rows,ui.fe?'Nenhuma folha salva para esta empresa nesta competência.':'Selecione a empresa cliente.')}`},
+folha:()=>{const fs=db.funcionarios.filter(f=>f.empresaId===ui.fe),f=fs.find(x=>x.id===ui.ff);let body='<div class="card empty">Selecione a empresa, a competência e o funcionário para lançar a folha.</div>';
+if(f){initLc(f);const sv=svd(f.id,ui.fc),lock=!!sv&&sv.status!=='Rascunho',L=ui.lc,c=calc(f,L),emp=db.empresas.find(e=>e.id===f.empresaId),usa=emp&&emp.usaPonto==='Sim',ds=lock?'disabled':'';
+const nu=(k,l)=>`<label>${l}<input data-lc="${k}" type="number" step="any" min="0" value="${L[k]}" ${ds}></label>`;
+const cus=db.rubricas.filter(r=>!r.fixo&&r.ativa==='Sim');
+const outs=(L.out||[]).map((o,i)=>`<div class="fl"><select data-lo="rid" data-i="${i}" ${ds}><option value="">Rubrica</option>${cus.map(r=>`<option value="${r.id}" ${r.id===o.rid?'selected':''}>${E(r.nome)} (${r.tipo})</option>`).join('')}</select><input data-lo="v" data-i="${i}" type="number" step="any" placeholder="Valor (R$)" value="${E(o.v)}" ${ds}><button type="button" class="lk d" data-a="rmo" data-i="${i}" ${ds}>Remover</button></div>`).join('');
+let btn='';if(!lock)btn+=`<button class="btn" data-a="sv">${sv?'Salvar alterações':'Salvar folha'}</button>`;
+if(sv&&sv.status==='Rascunho'&&adm())btn+='<button class="btn g" data-a="conf">Marcar como conferida</button>';
+if(sv&&sv.status==='Conferida'&&adm())btn+='<button class="btn" data-a="fech">Fechar folha</button>';
+if(sv&&sv.status!=='Rascunho'&&adm())btn+='<button class="btn g" data-a="reab">Reabrir</button>';
+if(sv)btn+=`<button class="btn g" data-a="cc" data-id="${sv.id}">Contracheque</button>`;
+body=`<div class="st"><h3>1. Identificação</h3>${ln('Funcionário',E(f.nome),'CPF '+f.cpf)}${ln('Cargo',E(cn(f.cargoId)))}${ln('Competência',dt(ui.fc+'-01').slice(3))}${ln('Salário-base',R(f.salario))}</div>
+<div class="st"><h3>Lançamentos do mês</h3><p class="sub" style="padding:10px 16px 0;margin:0">${usa?'Faltas, atrasos e horas extras vêm do ponto e podem ser corrigidos aqui.':'Esta empresa não usa o ponto: informe faltas, atrasos e horas extras manualmente.'}</p><div class="g4" style="padding:12px 16px">${nu('faltas','Faltas (dias)')}${nu('atr','Atrasos (horas)')}${nu('ext','Horas extras (horas)')}${nu('not','Horas noturnas')}${nu('fer','Dias de férias')}<label>13º salário<select data-lc="dec" ${ds}>${['Não','1ª parcela','2ª parcela','Parcela única'].map(x=>`<option ${x===L.dec?'selected':''}>${x}</option>`).join('')}</select></label>${nu('avos','13º: meses trabalhados')}${nu('adi','Adiantamento (R$)')}</div><div style="padding:0 16px 14px"><p style="margin:0 0 6px;font-size:13px;color:var(--mu)">Outros lançamentos</p>${outs}<button type="button" class="btn g" data-a="addo" ${ds}>Adicionar rubrica</button></div></div>
+<div id="res">${res(c)}</div>
+<div class="bar">${btn}${sv?stTag(sv.status):'<span class="tag">Não salva</span>'}</div>`}
+const sv=db.folhas.filter(x=>x.emp===ui.fe).sort((a,b)=>a.comp<b.comp?1:-1);
+const lst=ui.fe?`<h2 style="font-size:17px;margin:26px 0 10px">Folhas salvas</h2>`+tbl([{h:'Competência'},{h:'Funcionário'},{h:'Líquido',n:1},{h:'Situação'},{h:''}],sv.map(x=>{const ff=db.funcionarios.find(y=>y.id===x.fid);return`<tr><td>${dt(x.comp+'-01').slice(3)}</td><td>${E(ff?ff.nome:'—')}</td><td class="n">${R(x.liq)}</td><td>${stTag(x.status)}</td><td class="n"><button class="lk" data-a="open" data-id="${x.id}">Consultar</button><button class="lk" data-a="cc" data-id="${x.id}">Contracheque</button></td></tr>`}),'Nenhuma folha salva para esta empresa.'):'';
+const cur=f?f.nome+' — '+f.cpf:'';
+return`<h1>Folha de pagamento</h1><p class="sub">Lançamento mensal da remuneração do funcionário.</p><div class="bar">${sel('fe','Empresa cliente',emps(),ui.fe)}<label>Competência<input id="fc" type="month" value="${ui.fc}"></label><label>Funcionário<input id="fs" list="fl" value="${E(cur)}" placeholder="Nome ou CPF" style="width:280px"></label><datalist id="fl">${fs.map(x=>`<option value="${E(x.nome+' — '+x.cpf)}">`).join('')}</datalist></div>${body}${lst}`}};
+const T={folha:'Folha de pagamento',ponto:'Controle de ponto',relatorio:'Relatório mensal',funcionarios:'Funcionários',empresas:'Empresas clientes',cargos:'Cargos',horarios:'Horários e jornadas',rubricas:'Rubricas',users:'Usuários'};
+const allowed=k=>k==='rubricas'?adm():k==='users'?mestre():true;
+let busy=false;
+function draw(){if(busy)return;busy=true;try{drawNow()}finally{busy=false}}
+function drawNow(){const r=$('#root');
+if(!db.users.length){r.innerHTML=`<div class="login"><h1>${NOME}</h1><p class="sub">Primeiro acesso. Crie o usuário mestre do sistema.</p><form id="lf"><label>Nome<input name="nome" required></label><label>Usuário<input name="login" required autocomplete="username"></label><label>Senha<input name="senha" type="password" required minlength="4" autocomplete="new-password"></label><div class="err" id="er"></div><button type="button" class="btn" data-a="login">Criar e entrar</button></form></div>`;return}
+if(!me){r.innerHTML=`<div class="login"><h1>${NOME}</h1><p class="sub">Entre com seu usuário e senha.</p><form id="lf"><label>Usuário<input name="login" required autocomplete="username"></label><label>Senha<input name="senha" type="password" required autocomplete="current-password"></label><div class="err" id="er"></div><button type="button" class="btn" data-a="login">Entrar</button><button type="button" class="lk" data-a="forgot" style="text-align:left;padding:0">Esqueci minha senha</button></form></div>`;return}
+if(!allowed(route))route='folha';
+const ft=document.activeElement&&document.activeElement.id,pos=document.activeElement&&document.activeElement.selectionStart,lk=k=>`<a class="${route===k?'on':''}" data-r="${k}">${T[k]}</a>`;
+r.innerHTML=`<div class="app"><aside><div class="brand"><b>${NOME}</b><small>Folha de pagamento</small></div><nav><h6>Rotina mensal</h6>${['folha','ponto','relatorio'].map(lk).join('')}<h6>Cadastros</h6>${['funcionarios','empresas','cargos','horarios','rubricas','users'].filter(allowed).map(lk).join('')}</nav><div class="me">${E(me.nome)} · ${me.perfil}<br><button class="lk" data-a="out" style="padding:0">Sair</button>${mestre()?'<br><button class="lk" data-a="exp" style="padding:0">Exportar dados</button><br><button class="lk" data-a="imp" style="padding:0">Importar dados</button><br><button class="lk" data-a="newkey" style="padding:0">Nova chave de recuperação</button><input id="impf" type="file" accept=".json" hidden>':''}</div></aside><main>${V[route]()}</main></div>`;
+if(ft==='q'){const q=$('#q');q.focus();q.setSelectionRange(pos,pos)}}
+const mk=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',a=new Uint32Array(12);try{crypto.getRandomValues(a)}catch(e){for(let i=0;i<12;i++)a[i]=Math.random()*4294967296}let k='';for(let i=0;i<12;i++)k+=c[a[i]%c.length];return k};
+const showKey=k=>info('Chave de recuperação',`<p>Guarde esta chave em um lugar seguro. Ela é a única forma de redefinir a senha sem apagar os dados, e não será mostrada de novo.</p><p style="font-size:22px;font-weight:700;letter-spacing:.06em;margin:16px 0">${k.match(/.{4}/g).join('-')}</p>`);
+function doLogin(){const fm=$('#lf');if(!fm||!fm.reportValidity())return;const o=Object.fromEntries(new FormData(fm)),l=(o.login||'').trim();
+if(!db.users.length){const u={id:U(),nome:o.nome,login:l,senha:hs(l,o.senha),perfil:'Mestre'};db.users.push(u);const k=mk();db.rk=hs('rk',k);save();me=u;route='folha';ui.lk='';draw();showKey(k);return}
+else{const u=db.users.find(x=>x.login===l&&x.senha===hs(l,o.senha));if(!u){$('#er').textContent='Usuário ou senha incorretos.';return}me=u}
+route='folha';ui.lk='';draw()}
+document.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;if(e.target.closest('#lf')){e.preventDefault();doLogin()}else if(e.target.closest('#frm')){e.preventDefault();doSave()}});
+function saveFolha(f,status,extra){const c=calc(f,ui.lc),old=svd(f.id,ui.fc),x=Object.assign({id:old?old.id:U(),fid:f.id,emp:f.empresaId,comp:ui.fc,status:old?old.status:'Rascunho',em:new Date().toLocaleDateString('pt-BR'),por:me.nome,lanc:JSON.parse(JSON.stringify(ui.lc)),prov:c.P,desc:c.D,info:c.I,tp:c.prov,td:c.desc,liq:c.liq},old?{conf:old.conf,fech:old.fech}:{},extra||{});
+if(status)x.status=status;const i=db.folhas.findIndex(y=>y.id===x.id);if(i>=0)db.folhas[i]=x;else db.folhas.push(x);save()}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a],[data-r]');if(!t)return;const a=t.dataset.a,k=t.dataset.k,id=t.dataset.id;
+if(t.dataset.r){route=t.dataset.r;ui.lk='';draw();return}
+const f=db.funcionarios.find(x=>x.id===ui.ff),sv=f&&svd(f.id,ui.fc);
+if(a==='x')dlg().close();
+else if(a==='ok')doSave();
+else if(a==='forgot'){if(!db.rk)info('Esqueci minha senha','<p>Este acesso foi criado sem chave de recuperação, então a senha não pode ser redefinida. A única alternativa é apagar todos os dados deste navegador e criar um novo usuário mestre.</p><button type="button" class="btn g" data-a="wipe">Apagar tudo e recomeçar</button>');
+else openForm('Redefinir senha','<div class="g2"><label class="w2">Chave de recuperação<input name="k" required autocomplete="off"></label><label>Usuário<input name="login" required></label><label>Nova senha<input name="senha" type="password" required minlength="4"></label></div>',o=>{const k=o.k.toUpperCase().replace(/[^A-Z0-9]/g,'');if(hs('rk',k)!==db.rk)return'Chave de recuperação incorreta.';const u=db.users.find(x=>x.login===o.login.trim());if(!u)return'Usuário não encontrado.';u.senha=hs(u.login,o.senha);save();say('Senha redefinida. Entre com a nova senha.')})}
+else if(a==='wipe')ask('Apagar todos os dados e recomeçar? Isso não pode ser desfeito.',()=>{dlg().close();db=def();save();me=null;draw()});
+else if(a==='newkey')ask('Gerar uma nova chave de recuperação? A anterior deixa de valer.',()=>{const k=mk();db.rk=hs('rk',k);save();showKey(k)});else if(a==='login')doLogin();
+else if(a==='yes'){$('#dlg2').close();const c=askCb;askCb=null;if(c)c()}else if(a==='no')$('#dlg2').close();
+else if(a==='out'){me=null;draw()}
+else if(a==='new')edit(k);else if(a==='ed')edit(k,id);else if(a==='del')del(k,id);
+else if(a==='addf')$('#fls').insertAdjacentHTML('beforeend',filhoRow('',''));
+else if(a==='rmf')t.parentNode.remove();
+else if(a==='vc'){const c=db.cargos.find(x=>x.id===id),L=db.funcionarios.filter(x=>x.cargoId===id);info('Funcionários do cargo '+E(c.nome),L.length?tbl([{h:'Nome'},{h:'CPF'},{h:'Empresa'}],L.map(x=>`<tr><td>${E(x.nome)}</td><td>${E(x.cpf)}</td><td>${E(en(x.empresaId))}</td></tr>`)):'<div class="card empty">Nenhum funcionário neste cargo.</div>')}
+else if(a==='mark')openForm('Registrar dia',`<div class="g2"><label>Data<input name="data" type="date" required></label><label>Situação<select name="tipo"><option>Normal</option><option>Falta</option><option>Falta justificada</option></select></label><label>Entrada<input name="e1" type="time"></label><label>Saída para o intervalo<input name="s1" type="time"></label><label>Retorno do intervalo<input name="e2" type="time"></label><label>Saída<input name="s2" type="time"></label></div>`,o=>{if(db.ponto.some(p=>p.fid===ui.ff&&p.data===o.data))return'Já existe um registro para este dia. Use “Ajustar” para corrigir.';o.id=U();o.fid=ui.ff;db.ponto.push(o);save()});
+else if(a==='adj'){const p=db.ponto.find(x=>x.id===id),v=p.aj||p;openForm('Ajustar marcação',`<p class="sub">Os horários originais continuam guardados.</p><div class="g2"><label>Entrada<input name="e1" type="time" value="${v.e1||''}"></label><label>Saída para o intervalo<input name="s1" type="time" value="${v.s1||''}"></label><label>Retorno do intervalo<input name="e2" type="time" value="${v.e2||''}"></label><label>Saída<input name="s2" type="time" value="${v.s2||''}"></label><label class="w2">Motivo do ajuste<input name="motivo" required></label></div>`,o=>{o.por=me.nome;o.em=new Date().toISOString().slice(0,10);p.aj=o;save()})}
+else if(a==='addo'){ui.lc.out.push({rid:'',v:''});draw()}
+else if(a==='rmo'){ui.lc.out.splice(+t.dataset.i,1);draw()}
+else if(a==='sv'){saveFolha(f);draw()}
+else if(a==='conf'){saveFolha(f,'Conferida',{conf:me.nome});draw()}
+else if(a==='fech'){saveFolha(f,'Fechada',{fech:me.nome});draw()}
+else if(a==='reab'){ask('Reabrir esta folha para edição?',()=>{sv.status='Rascunho';save();draw()})}
+else if(a==='open'){const x=db.folhas.find(y=>y.id===id);ui.ff=x.fid;ui.fc=x.comp;ui.lk='';draw()}
+else if(a==='cc'){const x=db.folhas.find(y=>y.id===id);$('#frm').innerHTML=cc(x)+'<div class="acts noprint"><button type="button" class="btn g" data-a="x">Fechar</button><button type="button" class="btn" data-a="prt">Imprimir</button></div>';onSave=null;document.body.classList.add('pc');dlg().showModal()}
+else if(a==='prt')window.print();
+else if(a==='fcomp'){const L=db.folhas.filter(x=>x.emp===ui.fe&&x.comp===ui.fc);if(!L.length){say('Não há folhas salvas para esta empresa e competência.');return}
+if(L.some(x=>x.status==='Rascunho')){say('Há folhas em rascunho. Confira todas antes de fechar a competência.');return}
+ask('Fechar todas as folhas conferidas desta competência?',()=>{L.forEach(x=>{if(x.status==='Conferida'){x.status='Fechada';x.fech=me.nome}});save();draw()})}
+else if(a==='exp'){const b=new Blob([JSON.stringify(db)],{type:'application/json'}),l=document.createElement('a');l.href=URL.createObjectURL(b);l.download='backup-folha.json';l.click()}
+else if(a==='imp')$('#impf').click()});
+document.addEventListener('input',e=>{const i=e.target.id;if(i==='q'){ui.q=e.target.value;draw()}
+else if(i==='tol'||i==='lim'){db.cfg[i]=N(e.target.value);save()}
+else if(i==='fs'){const v=e.target.value.toLowerCase().trim(),f=db.funcionarios.find(x=>x.empresaId===ui.fe&&((x.nome+' — '+x.cpf).toLowerCase()===v||dig(x.cpf)===dig(v)&&dig(v)||x.nome.toLowerCase()===v));if(f){ui.ff=f.id;ui.lk='';draw()}}
+else if(e.target.dataset.lc){const k=e.target.dataset.lc;ui.lc[k]=k==='dec'?e.target.value:N(e.target.value);upd()}
+else if(e.target.dataset.lo){ui.lc.out[+e.target.dataset.i][e.target.dataset.lo]=e.target.value;upd()}});
+document.addEventListener('change',e=>{const t=e.target,i=t.id;
+if(i==='fe'){ui.fe=t.value;ui.ff='';ui.lk='';draw()}else if(i==='ff'){ui.ff=t.value;ui.lk='';draw()}else if(i==='fc'&&t.value){ui.fc=t.value;ui.lk='';draw()}
+else if(i==='qc'){ui.qc=t.value;draw()}
+else if(i==='impf'){const fl=t.files[0];if(!fl)return;const rd=new FileReader();rd.onload=()=>{try{const o=JSON.parse(rd.result);if(!o.users||!o.empresas)throw 0;ask('Substituir todos os dados atuais pelos dados do arquivo?',()=>{db=Object.assign(def(),o);save();me=db.users.find(u=>u.id===me.id)||null;draw()})}catch(x){say('Arquivo inválido.')}};rd.readAsText(fl)}
+else if(t.dataset.lc){const k=t.dataset.lc;ui.lc[k]=k==='dec'?t.value:N(t.value);upd()}
+else if(t.dataset.lo){const o=ui.lc.out[+t.dataset.i];o[t.dataset.lo]=t.value;upd()}
+else if(t.dataset.inss){const p=t.dataset.inss.split(':');db.cfg.inss[+p[0]][+p[1]]=N(t.value);save()}});
+draw();
+</script>
+</body>
+</html>
