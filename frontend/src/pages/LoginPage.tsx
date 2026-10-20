@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, User as UserIcon, CheckCircle2 } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, User as UserIcon, CheckCircle2, UserPlus, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 declare global {
@@ -11,12 +11,19 @@ declare global {
 export const LoginPage: React.FC = () => {
   const { login, register, loginWithGoogle } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
+  
+  // Estados dos Formulários
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Estados de Carregamento e Mensagens
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Modal Google
   const [showGoogleModal, setShowGoogleModal] = useState(false);
   const [customGoogleEmail, setCustomGoogleEmail] = useState('');
   const [customGoogleName, setCustomGoogleName] = useState('');
@@ -49,6 +56,18 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
+
+    if (mode === 'register') {
+      if (password.length < 6) {
+        setErrorMessage('A senha deve conter no mínimo 6 caracteres.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setErrorMessage('As senhas não coincidem. Por favor, confira a confirmação.');
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -74,7 +93,6 @@ export const LoginPage: React.FC = () => {
         console.warn('Google prompt fallback:', e);
       }
     }
-    // Abre modal interativo de login do Google
     setShowGoogleModal(true);
   };
 
@@ -106,14 +124,14 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="login-wrapper">
-      <div className="login-card">
+      <div className="login-card" style={{ maxWidth: '460px' }}>
         {/* Cabeçalho */}
-        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <div
             style={{
-              width: '54px',
-              height: '54px',
-              borderRadius: '14px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '16px',
               background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
               margin: '0 auto 1rem',
               display: 'flex',
@@ -123,16 +141,85 @@ export const LoginPage: React.FC = () => {
               boxShadow: '0 8px 24px rgba(79, 70, 229, 0.4)',
             }}
           >
-            <ShieldCheck size={30} />
+            {mode === 'login' ? <ShieldCheck size={32} /> : <UserPlus size={30} />}
           </div>
-          <h1 style={{ fontSize: '1.6rem', marginBottom: '0.35rem' }}>Portal de Folha Contábil</h1>
+          <h1 style={{ fontSize: '1.65rem', marginBottom: '0.35rem' }}>
+            {mode === 'login' ? 'Portal de Folha Contábil' : 'Crie sua Conta'}
+          </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Acesso integrado para Contabilidade e Empresas Clientes
+            {mode === 'login'
+              ? 'Acesso integrado para Contabilidade e Empresas Clientes'
+              : 'Cadastre-se para gerenciar ou consultar folhas de pagamento'}
           </p>
         </div>
 
+        {/* Abas Superiores de Seleção: Entrar / Cadastrar-se */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            background: 'rgba(0, 0, 0, 0.3)',
+            padding: '5px',
+            borderRadius: '10px',
+            marginBottom: '1.5rem',
+            border: '1px solid var(--border-color)',
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              setMode('login');
+              setErrorMessage('');
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '0.6rem',
+              borderRadius: '8px',
+              border: 'none',
+              background: mode === 'login' ? 'var(--primary)' : 'transparent',
+              color: mode === 'login' ? '#ffffff' : 'var(--text-secondary)',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            <LogIn size={16} />
+            <span>Entrar</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMode('register');
+              setErrorMessage('');
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '0.6rem',
+              borderRadius: '8px',
+              border: 'none',
+              background: mode === 'register' ? 'var(--primary)' : 'transparent',
+              color: mode === 'register' ? '#ffffff' : 'var(--text-secondary)',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            <UserPlus size={16} />
+            <span>Cadastrar-se</span>
+          </button>
+        </div>
+
         {/* Botão Oficial: Entrar com o Google */}
-        <div style={{ marginBottom: '1.5rem' }}>
+        <div style={{ marginBottom: '1.25rem' }}>
           <button
             type="button"
             onClick={handleGoogleClick}
@@ -175,7 +262,7 @@ export const LoginPage: React.FC = () => {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>Continuar com o Google</span>
+            <span>{mode === 'login' ? 'Continuar com o Google' : 'Cadastrar com o Google'}</span>
           </button>
         </div>
 
@@ -183,79 +270,9 @@ export const LoginPage: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', margin: '1.25rem 0', gap: '0.75rem' }}>
           <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }} />
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-            ou use e-mail e senha
+            ou preencha com e-mail
           </span>
           <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }} />
-        </div>
-
-        {/* Alternador de Modo: Entrar / Criar Conta */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            background: 'rgba(0, 0, 0, 0.25)',
-            padding: '4px',
-            borderRadius: '8px',
-            marginBottom: '1.25rem',
-            border: '1px solid var(--border-color)',
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => {
-              setMode('login');
-              setErrorMessage('');
-            }}
-            style={{
-              padding: '0.5rem',
-              borderRadius: '6px',
-              border: 'none',
-              background: mode === 'login' ? 'var(--primary)' : 'transparent',
-              color: mode === 'login' ? '#ffffff' : 'var(--text-secondary)',
-              fontWeight: 600,
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            Entrar
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode('register');
-              setErrorMessage('');
-            }}
-            style={{
-              padding: '0.5rem',
-              borderRadius: '6px',
-              border: 'none',
-              background: mode === 'register' ? 'var(--primary)' : 'transparent',
-              color: mode === 'register' ? '#ffffff' : 'var(--text-secondary)',
-              fontWeight: 600,
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            Criar Conta
-          </button>
-        </div>
-
-        {/* Informação sobre Login Livre */}
-        <div
-          style={{
-            background: 'rgba(99, 102, 241, 0.1)',
-            border: '1px solid rgba(99, 102, 241, 0.25)',
-            borderRadius: '8px',
-            padding: '0.65rem 0.85rem',
-            fontSize: '0.78rem',
-            color: '#c7d2fe',
-            marginBottom: '1.25rem',
-            lineHeight: '1.4',
-          }}
-        >
-          ✨ <strong>Acesso universal:</strong> Qualquer e-mail com senha válida (mín. 6 dígitos) pode logar. Se o e-mail for novo, sua conta será criada automaticamente!
         </div>
 
         {errorMessage && (
@@ -301,7 +318,7 @@ export const LoginPage: React.FC = () => {
         <form onSubmit={handleSubmit}>
           {mode === 'register' && (
             <div className="form-group">
-              <label className="form-label">Nome Completo</label>
+              <label className="form-label">Nome Completo *</label>
               <div style={{ position: 'relative' }}>
                 <UserIcon
                   size={18}
@@ -327,7 +344,7 @@ export const LoginPage: React.FC = () => {
           )}
 
           <div className="form-group">
-            <label className="form-label">E-mail corporativo ou pessoal</label>
+            <label className="form-label">E-mail corporativo ou pessoal *</label>
             <div style={{ position: 'relative' }}>
               <Mail
                 size={18}
@@ -352,7 +369,7 @@ export const LoginPage: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Senha de acesso</label>
+            <label className="form-label">Senha de acesso *</label>
             <div style={{ position: 'relative' }}>
               <Lock
                 size={18}
@@ -377,11 +394,39 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
+          {mode === 'register' && (
+            <div className="form-group">
+              <label className="form-label">Confirme sua Senha *</label>
+              <div style={{ position: 'relative' }}>
+                <Lock
+                  size={18}
+                  style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'var(--text-muted)',
+                  }}
+                />
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  className="form-input"
+                  style={{ paddingLeft: '38px' }}
+                  placeholder="Repita a senha digitada acima"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
           <button
             type="submit"
             className="btn btn-primary"
             disabled={loading}
-            style={{ width: '100%', marginTop: '0.5rem', height: '46px' }}
+            style={{ width: '100%', marginTop: '0.75rem', height: '46px', fontSize: '0.95rem' }}
           >
             {loading ? (
               <span>Processando...</span>
@@ -392,15 +437,66 @@ export const LoginPage: React.FC = () => {
               </>
             ) : (
               <>
-                <span>Criar Conta e Acessar</span>
-                <ArrowRight size={18} />
+                <span>Criar Minha Conta</span>
+                <UserPlus size={18} />
               </>
             )}
           </button>
         </form>
 
+        {/* Links de Alternância no Rodapé */}
+        <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+          {mode === 'login' ? (
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              Ainda não tem uma conta?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('register');
+                  setErrorMessage('');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#818cf8',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  padding: 0,
+                  font: 'inherit',
+                }}
+              >
+                Cadastre-se aqui
+              </button>
+            </p>
+          ) : (
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              Já possui uma conta cadastrada?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('login');
+                  setErrorMessage('');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#818cf8',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  padding: 0,
+                  font: 'inherit',
+                }}
+              >
+                Faça login aqui
+              </button>
+            </p>
+          )}
+        </div>
+
         {/* Atalhos Rápidos para Testes da Equipe */}
-        <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+        <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
           <p
             style={{
               fontSize: '0.75rem',
@@ -409,7 +505,7 @@ export const LoginPage: React.FC = () => {
               textAlign: 'center',
             }}
           >
-            ⚡ Contas de demonstração com papéis pré-definidos:
+            ⚡ Acessos pré-configurados para testes do time:
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
             <button
